@@ -12,13 +12,13 @@ def bot(message):
         temperature=0.2,
         max_tokens=150,
     )
+    print("Bot response: ", response.choices[0].message.content)
     return response.choices[0].message.content
 
 def main():
     print("Welcome to Textalytics!")
     prompt = input("Type your prompt: ")
-    response = bot(prompt)
-    print(response)
+    bot(prompt)
 
 if __name__ == "__main__":
     main()
