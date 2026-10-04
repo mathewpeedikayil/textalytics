@@ -22,3 +22,7 @@ def main():
 
 if __name__ == "__main__":
     main()
+
+# References
+# Build Your First AI Chatbot with Python (No OpenAI API Cost!)
+# https://www.youtube.com/watch?v=WjtBdKrZzf4&t=1718s
