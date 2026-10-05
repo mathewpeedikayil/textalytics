@@ -15,10 +15,16 @@ def bot(message):
     print("Bot response: ", response.choices[0].message.content)
     return response.choices[0].message.content
 
+def chat():
+    while True:
+        user_input = input("You: ")
+        if user_input.strip().lower() == "quit":
+            break
+        bot(user_input)
+
 def main():
     print("Welcome to Textalytics!")
-    prompt = input("Type your prompt: ")
-    bot(prompt)
+    chat()
 
 if __name__ == "__main__":
     main()
