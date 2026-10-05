@@ -1,3 +1,4 @@
+from openai import APIStatusError # handle 503 Service Unavailable errors
 from openai import OpenAI
 import dotenv
 import time
@@ -13,16 +14,19 @@ messages = [
 ]
 
 def bot():
-    stream = client.chat.completions.create(
-        model="openai/gpt-oss-20b", # using 20b model instead of the 120b model
-        messages=messages,
-        temperature=0.2,
-        max_tokens=150,
-        stream=True
-    ) 
+    stream = None
     response_content = ""
-    print("Bot: ", end="", flush=True)
+
     try:
+        stream = client.chat.completions.create(
+            model="openai/gpt-oss-20b", # using 20b model instead of the 120b model
+            messages=messages,
+            temperature=0.2,
+            max_tokens=150,
+            stream=True
+        ) 
+        print("Bot: ", end="", flush=True)
+
         for chunk in stream:
             if not chunk.choices:
                 continue
@@ -31,11 +35,15 @@ def bot():
                 time.sleep(0.1) # delay to simulate typing effect
                 print(text, end="", flush=True)
                 response_content += text
-    finally:
-        stream.close()
-        print()
 
-    messages.append({"role": "assistant", "content": response_content}) # append  bot's response to the message history
+        messages.append({"role": "assistant", "content": response_content}) # append  bot's response to the message history
+        
+    except APIStatusError as e:
+        print(f"API error occurred: {e}")
+    finally:
+        if stream:
+            stream.close()
+        print()
 
 def chat():
     while True:
