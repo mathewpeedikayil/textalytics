@@ -25,6 +25,7 @@ def bot():
             max_tokens=150,
             stream=True
         ) 
+
         print("Bot: ", end="", flush=True)
 
         for chunk in stream:
@@ -39,7 +40,7 @@ def bot():
         messages.append({"role": "assistant", "content": response_content}) # append  bot's response to the message history
         
     except APIStatusError as e:
-        print(f"API error occurred: {e}")
+        print(f"API call failed: {e}")
     finally:
         if stream:
             stream.close()
