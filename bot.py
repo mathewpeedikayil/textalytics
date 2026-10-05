@@ -7,9 +7,7 @@ client = OpenAI(api_key=os.getenv("GROQ_API_KEY"), base_url="https://api.groq.co
 messages = [
     {"role" : "system", "content" : """
         You are a helpful assistant,
-        Your name is textalyticsBot,
-        Give concise responses,
-        Introduce yourself in the first response
+        Give concise responses
     """}
 ]
 
@@ -28,9 +26,12 @@ def chat():
     while True:
         user_input = input("You: ")
         messages.append({"role": "user", "content": user_input})
-        if user_input.strip().lower() == "quit":
+        if user_input.strip().lower() == "history":
+            print("Chat History: " + str(messages))
+        elif user_input.strip().lower() == "quit":
             break 
-        print(bot())
+        else:
+            print(bot())
 
 def main():
     print("Welcome to Textalytics!")
