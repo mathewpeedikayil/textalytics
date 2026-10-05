@@ -40,7 +40,9 @@ def bot():
 def chat():
     while True:
         user_input = input("You: ")
-        if user_input.strip().lower() == "quit":
+        if not user_input.strip():
+            continue # skip empty input
+        elif user_input.strip().lower() == "quit":
             print("Thank you for using Textalytics!")
             break 
         elif user_input.strip().lower() == "history":
