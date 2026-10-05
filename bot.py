@@ -11,16 +11,15 @@ def bot(message):
         messages=[{"role": "user", "content": message}],
         temperature=0.2,
         max_tokens=150,
-    )
-    print("Bot response: ", response.choices[0].message.content)
-    return response.choices[0].message.content
+    ) 
+    return "Bot response: " + response.choices[0].message.content
 
 def chat():
     while True:
         user_input = input("You: ")
         if user_input.strip().lower() == "quit":
-            break
-        bot(user_input)
+            break 
+        print(bot(user_input))
 
 def main():
     print("Welcome to Textalytics!")
