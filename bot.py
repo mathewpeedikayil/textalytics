@@ -41,6 +41,7 @@ def chat():
     while True:
         user_input = input("You: ")
         if user_input.strip().lower() == "quit":
+            print("Thank you for using Textalytics!")
             break 
         elif user_input.strip().lower() == "history":
             print("Chat History: " + str(messages))
