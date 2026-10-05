@@ -12,15 +12,28 @@ messages = [
 ]
 
 def bot():
-    response = client.chat.completions.create(
+    stream = client.chat.completions.create(
         model="openai/gpt-oss-20b", # using 20b model instead of the 120b model
         messages=messages,
         temperature=0.2,
         max_tokens=150,
+        stream=True
     ) 
-    response_content = response.choices[0].message.content
+    response_content = ""
+    print("Bot: ", end="", flush=True)
+    try:
+        for chunk in stream:
+            if not chunk.choices:
+                continue
+            text = chunk.choices[0].delta.content
+            if text:
+                print(text, end="", flush=True)
+                response_content += text
+    finally:
+        stream.close()
+        print()
+
     messages.append({"role": "assistant", "content": response_content}) # append  bot's response to the message history
-    return response_content
 
 def chat():
     while True:
@@ -31,7 +44,7 @@ def chat():
             print("Chat History: " + str(messages))
         else:
             messages.append({"role": "user", "content": user_input})
-            print(bot())
+            bot()
 
 def main():
     print("Welcome to Textalytics!")
