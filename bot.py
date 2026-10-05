@@ -1,5 +1,6 @@
 from openai import OpenAI
 import dotenv
+import time
 import os
 
 dotenv.load_dotenv()
@@ -27,6 +28,7 @@ def bot():
                 continue
             text = chunk.choices[0].delta.content
             if text:
+                time.sleep(0.1) # delay to simulate typing effect
                 print(text, end="", flush=True)
                 response_content += text
     finally:
