@@ -31,3 +31,6 @@ if __name__ == "__main__":
 # References
 # Build Your First AI Chatbot with Python (No OpenAI API Cost!)
 # https://www.youtube.com/watch?v=WjtBdKrZzf4&t=1718s
+
+# GroqCloud
+# https://console.groq.com/playground?model=openai/gpt-oss-120b
