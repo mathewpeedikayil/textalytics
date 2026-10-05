@@ -13,7 +13,7 @@ messages = [
 
 def bot():
     response = client.chat.completions.create(
-        model="openai/gpt-oss-20b",
+        model="openai/gpt-oss-20b", # using 20b model instead of the 120b model
         messages=messages,
         temperature=0.2,
         max_tokens=150,
