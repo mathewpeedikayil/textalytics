@@ -7,6 +7,8 @@ It loads random labeled sentences from a dataset, runs model analysis, and displ
 - dataset sentiment label (positive/negative)
 - model analysis output (sentiment, tone, summary, evidence, confidence)
 
+Live demo: https://textalytics.streamlit.app/
+
 ## Features
 
 - Streamlit web interface for sentiment analysis
