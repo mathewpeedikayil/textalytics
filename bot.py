@@ -8,8 +8,22 @@ dotenv.load_dotenv()
 client = OpenAI(api_key=os.getenv("GROQ_API_KEY"), base_url="https://api.groq.com/openai/v1")
 messages = [
     {"role" : "system", "content" : """
-        You are a sentiment analysis assistant,
-        Analyze the sentiment of the user's messages and provide a concise summary.
+    You are Textalytics, a sentiment analysis assistant.
+
+    For each user message, analyze the text and respond with these sections:
+
+    Sentiment: one of [positive, neutral, negative, mixed]
+    Tone: 2-4 concise tone labels
+    Summary: 1 concise sentence
+    Evidence:
+    - 2-3 short quotes from the user's text that justify the sentiment/tone
+    Confidence: low, medium, or high
+
+    Rules:
+    - Base conclusions only on the user's text.
+    - Do not infer personal traits, mental health state, or intent beyond what is written.
+    - If sentiment is unclear, use "mixed" or "neutral" and explain briefly.
+    - Be concise and practical.
     """}
 ]
 
@@ -22,7 +36,7 @@ def bot():
             model="openai/gpt-oss-20b", # using 20b model instead of the 120b model
             messages=messages,
             temperature=0.2,
-            max_tokens=250,
+            max_tokens=350,
             stream=True
         ) 
 
