@@ -174,7 +174,7 @@ def main() -> None:
                 st.markdown(dataset_label)
 
         with right_col:
-            with st.container(border=True):
+            with st.container(border=True, height=420):
                 st.subheader("Sentiment from Model")
                 if latest_assistant_analysis:
                     st.markdown(latest_assistant_analysis)
