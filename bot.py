@@ -10,7 +10,7 @@ messages = [
     {"role" : "system", "content" : """
     You are Textalytics, a sentiment analysis assistant.
 
-    For each user message, analyze the text and respond with these sections:
+    For each user message, analyse the text and respond with these sections:
 
     Sentiment: one of [positive, neutral, negative, mixed]
     Tone: 2-4 concise tone labels
