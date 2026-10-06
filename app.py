@@ -73,7 +73,7 @@ def stream_assistant_response():
 
 
 @st.cache_data
-def load_combined_rows(csv_path: str = "combined.csv"):
+def load_combined_rows(csv_path: str = "data/combined.csv"):
     path = Path(csv_path)
     if not path.exists():
         return []
@@ -101,7 +101,7 @@ def main() -> None:
     st.set_page_config(page_title="Textalytics", page_icon="💬", layout="wide")
 
     initialize_messages()
-    rows = load_combined_rows("combined.csv")
+    rows = load_combined_rows("data/combined.csv")
     if rows and "random_sample" not in st.session_state:
         first_sample = random.choice(rows)
         st.session_state.random_sample = first_sample
@@ -114,7 +114,7 @@ def main() -> None:
     _, main_col, _ = st.columns([0.5, 3, 0.5])
     with main_col:
         if not rows:
-            st.info("No data found. Add combined.csv to the project root.")
+            st.info("No data found. Add data/combined.csv to the project.")
             return
 
         st.title("Textalytics")
