@@ -9,11 +9,6 @@ import streamlit as st
 
 dotenv.load_dotenv()
 
-client = OpenAI(
-    api_key=os.getenv("GROQ_API_KEY"),
-    base_url="https://api.groq.com/openai/v1",
-)
-
 SYSTEM_PROMPT = """
 You are Textalytics, a sentiment analysis assistant.
 
@@ -38,7 +33,23 @@ def initialize_messages() -> None:
         st.session_state.messages = [{"role": "system", "content": SYSTEM_PROMPT}]
 
 
-def stream_assistant_response():
+def get_api_key() -> str:
+    secret_key = st.secrets.get("GROQ_API_KEY")
+    if secret_key:
+        return secret_key
+    env_key = os.getenv("GROQ_API_KEY") or os.getenv("OPENAI_API_KEY")
+    return env_key or ""
+
+
+@st.cache_resource
+def get_client(api_key: str) -> OpenAI:
+    return OpenAI(
+        api_key=api_key,
+        base_url="https://api.groq.com/openai/v1",
+    )
+
+
+def stream_assistant_response(client: OpenAI):
     stream = None
     response_content = ""
 
@@ -99,6 +110,16 @@ def get_latest_message_content(role: str) -> str:
 
 def main() -> None:
     st.set_page_config(page_title="Textalytics", page_icon="💬", layout="wide")
+    api_key = get_api_key()
+    if not api_key:
+        st.error(
+            "Missing API key. Set GROQ_API_KEY in Streamlit secrets or environment variables."
+        )
+        st.info(
+            "For Streamlit Community Cloud, add GROQ_API_KEY under App Settings -> Secrets."
+        )
+        return
+    client = get_client(api_key)
 
     initialize_messages()
     rows = load_combined_rows("data/combined.csv")
@@ -146,13 +167,13 @@ def main() -> None:
                 with progress_placeholder.container():
                     progress = st.progress(0, text="Analyzing...")
                     progress_value = 0
-                    for _ in stream_assistant_response():
+                    for _ in stream_assistant_response(client):
                         progress_value = min(progress_value + 5, 95)
                         progress.progress(progress_value, text="Analyzing...")
                     progress.progress(100, text="Complete")
                 progress_placeholder.empty()
             else:
-                for _ in stream_assistant_response():
+                for _ in stream_assistant_response(client):
                     pass
 
         latest_user_sentence = get_latest_message_content("user")
