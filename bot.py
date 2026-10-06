@@ -92,3 +92,6 @@ if __name__ == "__main__":
 
 # Build a Smarter AI Chatbot with Python | Memory, Streaming & Tokens
 # https://www.youtube.com/watch?v=F4xn2GUVr84
+
+# Sentiment Labelled Sentences
+# https://archive.ics.uci.edu/dataset/331/sentiment+labelled+sentences
