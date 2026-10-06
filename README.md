@@ -49,9 +49,20 @@ streamlit run app.py
 python bot.py
 ```
 
-## Notes
+## Dataset
 
-- Dataset labels are interpreted as:
+This project uses the **Sentiment Labelled Sentences** dataset from UCI:
+
+- UCI dataset page: https://archive.ics.uci.edu/dataset/331/sentiment+labelled+sentences
+- Source domains: IMDb, Amazon, and Yelp
+- Labels:
   - `1` -> `positive`
   - `0` -> `negative`
+
+The dataset is associated with:
+
+> Kotzias et al., *From Group to Individual Labels using Deep Features* (KDD 2015)
+
+## Notes
+
 - The app expects `data/combined.csv` to exist.
