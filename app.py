@@ -111,39 +111,54 @@ def main() -> None:
 
     sample = st.session_state.get("random_sample")
     dataset_label = get_dataset_label(sample) if sample else "Not available"
-    _, main_col, _ = st.columns([1, 2, 1])
+    _, main_col, _ = st.columns([0.5, 3, 0.5])
     with main_col:
         if not rows:
             st.info("No data found. Add combined.csv to the project root.")
             return
 
-        pending_user_input = st.session_state.pop("pending_user_input", None)
-        user_input = pending_user_input
-        if user_input:
-            st.session_state.messages.append({"role": "user", "content": user_input})
-            with st.spinner("Analyzing sentence..."):
-                _ = "".join(stream_assistant_response())
-
-        latest_user_sentence = get_latest_message_content("user")
-        latest_assistant_analysis = get_latest_message_content("assistant")
         st.title("Textalytics")
         st.caption("Sentiment Analysis Bot")
 
         left_col, right_col = st.columns(2, gap="small")
+        progress_placeholder = None
         with left_col:
-            if st.button(
-                "Load New Sentence",
-                use_container_width=True,
-            ):
-                st.session_state.messages = [{"role": "system", "content": SYSTEM_PROMPT}]
-                st.session_state.pop("pending_user_input", None)
-                sample = random.choice(rows)
-                st.session_state.random_sample = sample
-                sentence_text = sample.get("sentence") or sample.get("text") or ""
-                if sentence_text:
-                    st.session_state.pending_user_input = sentence_text
-                    st.rerun()
+            with st.container(border=True):
+                if st.button(
+                    "Load New Sentence",
+                    use_container_width=True,
+                ):
+                    st.session_state.messages = [{"role": "system", "content": SYSTEM_PROMPT}]
+                    st.session_state.pop("pending_user_input", None)
+                    sample = random.choice(rows)
+                    st.session_state.random_sample = sample
+                    sentence_text = sample.get("sentence") or sample.get("text") or ""
+                    if sentence_text:
+                        st.session_state.pending_user_input = sentence_text
+                        st.rerun()
+                progress_placeholder = st.empty()
 
+        pending_user_input = st.session_state.pop("pending_user_input", None)
+        user_input = pending_user_input
+        if user_input:
+            st.session_state.messages.append({"role": "user", "content": user_input})
+            if progress_placeholder is not None:
+                with progress_placeholder.container():
+                    progress = st.progress(0, text="Analyzing...")
+                    progress_value = 0
+                    for _ in stream_assistant_response():
+                        progress_value = min(progress_value + 5, 95)
+                        progress.progress(progress_value, text="Analyzing...")
+                    progress.progress(100, text="Complete")
+                progress_placeholder.empty()
+            else:
+                for _ in stream_assistant_response():
+                    pass
+
+        latest_user_sentence = get_latest_message_content("user")
+        latest_assistant_analysis = get_latest_message_content("assistant")
+
+        with left_col:
             with st.container(border=True):
                 st.subheader("Dataset Sentence")
                 if latest_user_sentence:
