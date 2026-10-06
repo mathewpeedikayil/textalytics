@@ -16,11 +16,24 @@ It loads random labeled sentences from a dataset, runs model analysis, and displ
 
 ## Project Structure
 
-- `app.py` - Streamlit app (main UI)
-- `bot.py` - CLI chatbot script
-- `data/` - Dataset files (`.txt`, `.csv`, `combined.csv`)
-- `data.py` - Utility script to build CSV files
-- `requirements.txt` - Python dependencies
+```text
+.
+├── app.py                 # Streamlit UI
+├── bot.py                 # CLI chatbot
+├── data.py                # Dataset conversion/merge utility
+├── requirements.txt       # Python dependencies
+├── README.md              # Project documentation
+├── LICENSE                # MIT license
+├── UI.png                 # UI preview screenshot
+└── data/
+    ├── combined.csv
+    ├── amazon_cells_labelled.txt
+    ├── amazon_cells_labelled.csv
+    ├── imdb_labelled.txt
+    ├── imdb_labelled.csv
+    ├── yelp_labelled.txt
+    └── yelp_labelled.csv
+```
 
 ## Setup
 
@@ -42,6 +55,10 @@ pip install -r requirements.txt
 ```bash
 streamlit run app.py
 ```
+
+## UI Preview
+
+![Textalytics UI](./UI.png)
 
 ## Run the CLI Bot
 
