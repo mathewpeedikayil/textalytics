@@ -12,7 +12,6 @@ It loads random labeled sentences from a dataset, runs model analysis, and displ
 - Streamlit web interface for sentiment analysis
 - Random sentence sampling from dataset
 - Side-by-side dataset sentence and model analysis
-- CLI chatbot script for terminal-based interaction
 
 ## Project Structure
 
