@@ -36,7 +36,7 @@ def bot():
             model="openai/gpt-oss-20b", # using 20b model instead of the 120b model
             messages=messages,
             temperature=0.2,
-            max_tokens=350,
+            max_tokens=380,
             stream=True
         ) 
 

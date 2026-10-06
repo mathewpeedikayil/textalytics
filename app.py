@@ -45,7 +45,7 @@ def stream_assistant_response():
             model="openai/gpt-oss-20b",
             messages=st.session_state.messages,
             temperature=0.2,
-            max_tokens=350,
+            max_tokens=380,
             stream=True,
         )
 
