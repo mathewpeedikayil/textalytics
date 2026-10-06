@@ -66,3 +66,4 @@ The dataset is associated with:
 ## Notes
 
 - The app expects `data/combined.csv` to exist.
+- Built with AI-assisted development support (GPT-5.3-Codex), with final implementation and testing by the author.
