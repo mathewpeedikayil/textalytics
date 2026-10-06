@@ -8,8 +8,8 @@ dotenv.load_dotenv()
 client = OpenAI(api_key=os.getenv("GROQ_API_KEY"), base_url="https://api.groq.com/openai/v1")
 messages = [
     {"role" : "system", "content" : """
-        You are a helpful assistant,
-        Give concise responses
+        You are a sentiment analysis assistant,
+        Analyze the sentiment of the user's messages and provide a concise summary.
     """}
 ]
 
@@ -22,7 +22,7 @@ def bot():
             model="openai/gpt-oss-20b", # using 20b model instead of the 120b model
             messages=messages,
             temperature=0.2,
-            max_tokens=150,
+            max_tokens=250,
             stream=True
         ) 
 
@@ -62,6 +62,8 @@ def chat():
 
 def main():
     print("Welcome to Textalytics!")
+    print("Type a sentence to perform sentiment analysis.")
+    print("Type 'history' to view chat history or 'quit' to exit.")
     chat()
 
 if __name__ == "__main__":
