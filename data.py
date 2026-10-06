@@ -26,3 +26,6 @@ with open(combined_csv_file_name, "w", newline="", encoding="utf-8") as combined
             next(csv_reader)  # Skip header
             for row in csv_reader:
                 csv_writer.writerow(row)
+
+# Sentiment Labelled Sentences
+# https://archive.ics.uci.edu/dataset/331/sentiment+labelled+sentences
