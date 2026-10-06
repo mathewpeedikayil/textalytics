@@ -1,6 +1,9 @@
+import csv
 from openai import APIStatusError, OpenAI
 import dotenv
 import os
+from pathlib import Path
+import random
 import streamlit as st
 
 
@@ -19,8 +22,7 @@ For each user message, analyse the text and respond with these sections:
 Sentiment: one of [positive, neutral, negative, mixed]
 Tone: 2-4 concise tone labels
 Summary: 1 concise sentence
-Evidence:
-- 2-3 short quotes from the user's text that justify the sentiment/tone
+Evidence: 2-3 short quotes from the user's text that justify the sentiment/tone
 Confidence: low, medium, or high
 
 Rules:
@@ -34,10 +36,6 @@ Rules:
 def initialize_messages() -> None:
     if "messages" not in st.session_state:
         st.session_state.messages = [{"role": "system", "content": SYSTEM_PROMPT}]
-
-
-def reset_messages() -> None:
-    st.session_state.messages = [{"role": "system", "content": SYSTEM_PROMPT}]
 
 
 def stream_assistant_response():
@@ -74,36 +72,98 @@ def stream_assistant_response():
             stream.close()
 
 
+@st.cache_data
+def load_combined_rows(csv_path: str = "combined.csv"):
+    path = Path(csv_path)
+    if not path.exists():
+        return []
+    with path.open("r", encoding="utf-8", newline="") as file:
+        return list(csv.DictReader(file))
+
+
+def get_dataset_label(sample: dict) -> str:
+    label_text = str(sample.get("label", "")).strip()
+    if label_text == "1":
+        return "positive"
+    if label_text == "0":
+        return "negative"
+    return label_text if label_text else "Not available"
+
+
+def get_latest_message_content(role: str) -> str:
+    for message in reversed(st.session_state.messages):
+        if message.get("role") == role:
+            return message.get("content", "")
+    return ""
+
+
 def main() -> None:
     st.set_page_config(page_title="Textalytics", page_icon="💬", layout="wide")
 
     initialize_messages()
-    info_col, chat_col = st.columns([1, 3], gap="large")
+    rows = load_combined_rows("combined.csv")
+    if rows and "random_sample" not in st.session_state:
+        first_sample = random.choice(rows)
+        st.session_state.random_sample = first_sample
+        first_sentence = first_sample.get("sentence") or first_sample.get("text") or ""
+        if first_sentence:
+            st.session_state.pending_user_input = first_sentence
 
-    with info_col:
-        st.title("Textalytics")
-        st.caption("Sentiment Analysis Chatbot")
-        if st.button("Clear Chat", use_container_width=True):
-            reset_messages()
-            st.rerun()
-
-    with chat_col:
-        for message in st.session_state.messages:
-            if message["role"] == "system":
-                continue
-            with st.chat_message(message["role"]):
-                st.markdown(message["content"])
-
-        user_input = st.chat_input("Type your sentence for sentiment analysis...")
-        if not user_input:
+    sample = st.session_state.get("random_sample")
+    dataset_label = get_dataset_label(sample) if sample else "Not available"
+    _, main_col, _ = st.columns([1, 2, 1])
+    with main_col:
+        if not rows:
+            st.info("No data found. Add combined.csv to the project root.")
             return
 
-        st.session_state.messages.append({"role": "user", "content": user_input})
-        with st.chat_message("user"):
-            st.markdown(user_input)
+        pending_user_input = st.session_state.pop("pending_user_input", None)
+        user_input = pending_user_input
+        if user_input:
+            st.session_state.messages.append({"role": "user", "content": user_input})
+            with st.spinner("Analyzing sentence..."):
+                _ = "".join(stream_assistant_response())
 
-        with st.chat_message("assistant"):
-            st.write_stream(stream_assistant_response)
+        latest_user_sentence = get_latest_message_content("user")
+        latest_assistant_analysis = get_latest_message_content("assistant")
+        st.title("Textalytics")
+        st.caption("Sentiment Analysis Bot")
+
+        left_col, right_col = st.columns(2, gap="small")
+        with left_col:
+            if st.button(
+                "Load New Sentence",
+                use_container_width=True,
+            ):
+                st.session_state.messages = [{"role": "system", "content": SYSTEM_PROMPT}]
+                st.session_state.pop("pending_user_input", None)
+                sample = random.choice(rows)
+                st.session_state.random_sample = sample
+                sentence_text = sample.get("sentence") or sample.get("text") or ""
+                if sentence_text:
+                    st.session_state.pending_user_input = sentence_text
+                    st.rerun()
+
+            with st.container(border=True):
+                st.subheader("Dataset Sentence")
+                if latest_user_sentence:
+                    st.markdown(latest_user_sentence)
+                elif sample:
+                    fallback_sentence = sample.get("sentence") or sample.get("text") or ""
+                    st.markdown(fallback_sentence)
+                else:
+                    st.info("Load a sentence to begin.")
+
+            with st.container(border=True):
+                st.metric("Dataset Sentiment Label", dataset_label)
+
+        with right_col:
+            with st.container(border=True):
+                st.subheader("Model Analysis")
+                if latest_assistant_analysis:
+                    st.markdown(latest_assistant_analysis)
+                else:
+                    st.info("Analysis will appear here after loading a sentence.")
 
 
 if __name__ == "__main__":
