@@ -123,9 +123,9 @@ def main() -> None:
         left_col, right_col = st.columns(2, gap="small")
         progress_placeholder = None
         with left_col:
-            with st.container(border=True):
+            with st.container(border=False):
                 if st.button(
-                    "Load New Sentence",
+                    "Load New Sentence from Dataset",
                     use_container_width=True,
                 ):
                     st.session_state.messages = [{"role": "system", "content": SYSTEM_PROMPT}]
@@ -170,11 +170,12 @@ def main() -> None:
                     st.info("Load a sentence to begin.")
 
             with st.container(border=True):
-                st.metric("Dataset Sentiment Label", dataset_label)
+                st.subheader("Dataset Sentiment Label")
+                st.markdown(dataset_label)
 
         with right_col:
             with st.container(border=True):
-                st.subheader("Model Analysis")
+                st.subheader("Sentiment from Model")
                 if latest_assistant_analysis:
                     st.markdown(latest_assistant_analysis)
                 else:
