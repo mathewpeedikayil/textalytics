@@ -36,6 +36,10 @@ def initialize_messages() -> None:
         st.session_state.messages = [{"role": "system", "content": SYSTEM_PROMPT}]
 
 
+def reset_messages() -> None:
+    st.session_state.messages = [{"role": "system", "content": SYSTEM_PROMPT}]
+
+
 def stream_assistant_response():
     stream = None
     response_content = ""
@@ -74,27 +78,32 @@ def main() -> None:
     st.set_page_config(page_title="Textalytics", page_icon="💬", layout="wide")
 
     initialize_messages()
-    st.title("Textalytics")
-    st.caption("Sentiment Analysis Chatbot - Powered by Groq + Python")
+    info_col, chat_col = st.columns([1, 3], gap="large")
 
-    st.divider()
+    with info_col:
+        st.title("Textalytics")
+        st.caption("Sentiment Analysis Chatbot")
+        if st.button("Clear Chat", use_container_width=True):
+            reset_messages()
+            st.rerun()
 
-    for message in st.session_state.messages:
-        if message["role"] == "system":
-            continue
-        with st.chat_message(message["role"]):
-            st.markdown(message["content"])
+    with chat_col:
+        for message in st.session_state.messages:
+            if message["role"] == "system":
+                continue
+            with st.chat_message(message["role"]):
+                st.markdown(message["content"])
 
-    user_input = st.chat_input("Type your sentence for sentiment analysis...")
-    if not user_input:
-        return
+        user_input = st.chat_input("Type your sentence for sentiment analysis...")
+        if not user_input:
+            return
 
-    st.session_state.messages.append({"role": "user", "content": user_input})
-    with st.chat_message("user"):
-        st.markdown(user_input)
+        st.session_state.messages.append({"role": "user", "content": user_input})
+        with st.chat_message("user"):
+            st.markdown(user_input)
 
-    with st.chat_message("assistant"):
-        st.write_stream(stream_assistant_response)
+        with st.chat_message("assistant"):
+            st.write_stream(stream_assistant_response)
 
 
 if __name__ == "__main__":
